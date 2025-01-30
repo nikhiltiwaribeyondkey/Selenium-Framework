@@ -1,0 +1,6 @@
+﻿{"username": "rahulshettyacademy",
+    "password": "learning",
+    "wrong_username": "abc",
+    "wrong_password": "xyx",
+    "expected_product": [ "iphone X", "Blackberry" ]
+}

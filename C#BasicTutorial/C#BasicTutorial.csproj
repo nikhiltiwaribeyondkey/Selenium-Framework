@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>C_BasicTutorial</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="4DayAssignmentString.cs" />
+    <Compile Remove="5-6DayAssArrayList.cs.cs" />
+    <Compile Remove="7-8Day.cs" />
+    <Compile Remove="Class1.cs" />
+    <Compile Remove="CollectionFramework.cs" />
+    <Compile Remove="DataType.cs" />
+    <Compile Remove="Enumeration.cs" />
+    <Compile Remove="Generics.cs" />
+    <Compile Remove="InheritanceChildClass.cs" />
+    <Compile Remove="InheritanceEngine.cs" />
+    <Compile Remove="InterfaceDemo.cs" />
+    <Compile Remove="InterfaceDemo1.cs" />
+    <Compile Remove="PatterMatcher.cs" />
+    <Compile Remove="Polymorphism.cs" />
+    <Compile Remove="Program.cs" />
+    <Compile Remove="Read_WriteToFile.cs" />
+    <Compile Remove="StringTutorial.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="4DayAssignmentString.cs" />
+    <None Include="5-6DayAssArrayList.cs.cs" />
+    <None Include="7-8Day.cs" />
+    <None Include="Class1.cs" />
+    <None Include="CollectionFramework.cs" />
+    <None Include="DataType.cs" />
+    <None Include="Enumeration.cs" />
+    <None Include="Generics.cs" />
+    <None Include="InheritanceChildClass.cs" />
+    <None Include="InheritanceEngine.cs" />
+    <None Include="InterfaceDemo.cs" />
+    <None Include="InterfaceDemo1.cs" />
+    <None Include="PatterMatcher.cs" />
+    <None Include="Polymorphism.cs" />
+    <None Include="Program.cs" />
+    <None Include="Read_WriteToFile.cs" />
+    <None Include="StringTutorial.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Selenium.WebDriver" Version="4.27.0" />
+  </ItemGroup>
+
+</Project>
