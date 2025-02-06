@@ -10,13 +10,19 @@ using SeleniumC_Framework.pages;
 using SeleniumC_Framework.utilities;
 using SeleniumExtras.WaitHelpers;
 using WebDriverManager.DriverConfigs.Impl;
+
+using Allure.NUnit.Attributes;
 using static SeleniumC_Framework.utilities.ExcelDataReader;
+using Allure.NUnit;
+
 
 namespace SeleniumC_Framework.Tests
 {
     //[Parallelizable((ParallelScope.Children))]
     //[TestFixture]
     //[Parallelizable((ParallelScope.Self))]
+
+    [AllureNUnit]
     class Tests : BaseClass
     {
 
@@ -30,6 +36,7 @@ namespace SeleniumC_Framework.Tests
         [TestCaseSource(nameof(getTestData))]
         [Parallelizable((ParallelScope.All))]
         [Category("TestLogin")]
+        [AllureDescription("For Login of User With password ")]
         public void Login(String username,String password, String[] itemName)
         {
             //DataCollection collection = new DataCollection();
@@ -37,6 +44,9 @@ namespace SeleniumC_Framework.Tests
             //collection.collectInCollection("data/ExcelTestData.xlsx");
             //String  userNameExel = collection.ReadData(1, "UserName");
             //TestContext.Progress.WriteLine("User Name" + userNameExel);
+
+
+
             
             string url = ConfigurationManager.AppSettings["url"];
             driver.Value.Url = url;
@@ -56,14 +66,18 @@ namespace SeleniumC_Framework.Tests
             loginPagePOM.setUserName(username);
             loginPagePOM.setPassword(password);
 
+
+            
             loginPagePOM.ClickTermAndCondition();
             loginPagePOM.ClickSignInButton();
 
+            logStep("Login Successful with user " + username);
 
             By cartButton = By.PartialLinkText("0");
             utilities.waitForVisibility(driver.Value, cartButton);
             utilities.AddItemIntoCart(driver.Value, productHomePage.getAppCards(), itemName);
 
+            logStep("product Added Successfully " + itemName);
 
             if (checkOutPage.getItemRowSelected().Count() > 2)
             {
@@ -83,25 +97,18 @@ namespace SeleniumC_Framework.Tests
                 utilities.waitForElementToBeClickable(driver.Value, submitBtn).Click();
 
 
+                logStep("Product Purchase Successfully ");
 
 
 
             }
 
 
-
-
-
-
-
-
-           
         }
-
-        
-
+ 
 
         [Test]
+        [Category("Mouse CLick")]
         public void MouseClick()
         {
 
@@ -122,4 +129,6 @@ namespace SeleniumC_Framework.Tests
         }
         
     }
+
+   
 }
