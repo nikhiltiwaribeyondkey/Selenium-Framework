@@ -56,6 +56,7 @@ namespace SeleniumC_Framework.utilities
             var htmlReport = new ExtentSparkReporter(reportPath);
 
             extent = new ExtentReports();
+
             extent.AttachReporter(htmlReport);
             extent.AddSystemInfo("Browser", "Chrome");
             extent.AddSystemInfo("Environment", "QA");
