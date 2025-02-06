@@ -19,6 +19,12 @@ using static SeleniumC_Framework.utilities.ExcelDataReader;
 using AventStack.ExtentReports;
 using System.ComponentModel.DataAnnotations;
 using AventStack.ExtentReports.Reporter;
+using Allure.NUnit.Attributes;
+using System.Reflection;
+//using Allure.Net.Commons;
+using Status = AventStack.ExtentReports.Status;
+using Allure.Commons;
+using NUnit.Framework.Interfaces;
 
 
 //[assembly:LevelOfParallelism(1)]
@@ -28,12 +34,16 @@ namespace SeleniumC_Framework.utilities
     internal class BaseClass
     {
         //protected IWebDriver driver;
-        public ThreadLocal<IWebDriver> driver = new ThreadLocal<IWebDriver>();
+        public ThreadLocal<IWebDriver> driver = new();
 
         protected IWebDriver driverManager;
         protected  WebDriverWait wait;
         public ExtentReports extent;
         public ExtentTest test;
+        ITakesScreenshot takesScreenshot;
+       
+
+
 
 
 
@@ -53,13 +63,27 @@ namespace SeleniumC_Framework.utilities
         }
 
         [SetUp]
+        
         public void Setup()
         {
             //new WebDriverManager.DriverManager().SetUpDriver(new ChromeConfig());
 
             //driver = new ChromeDriver();
+
+           
+
             test = extent.CreateTest(TestContext.CurrentContext.Test.Name);
-            string browerName = ConfigurationManager.AppSettings["browser"];
+
+            // to read value from CMD
+            string browerName = TestContext.Parameters["browser"];
+
+            if (browerName == null)
+            {
+                 browerName = ConfigurationManager.AppSettings["browser"];
+            }
+           
+
+           
             string url= ConfigurationManager.AppSettings["url"];
 
             TestContext.Progress.WriteLine($"From App COnf FIle {browerName} and  {url}");
@@ -79,8 +103,11 @@ namespace SeleniumC_Framework.utilities
             //// Explicit Wait
             wait = new WebDriverWait(driver.Value, TimeSpan.FromSeconds(10));
 
+            // TO capture Screenshoot
+            ITakesScreenshot takesScreenshot = (ITakesScreenshot)driver.Value;
 
-           TestContext.Progress.WriteLine("JSON DATA Array" +GetJsonReader().getArrayData("expected_product").ToString());
+
+            TestContext.Progress.WriteLine("JSON DATA Array" +GetJsonReader().getArrayData("expected_product").ToString());
 
 
             //TestContext.Progress.WriteLine("Data From Excel File " +ExcelDataReader.ExcelTableDataReader();
@@ -114,15 +141,15 @@ namespace SeleniumC_Framework.utilities
         {
 
             DateTime time = DateTime.Now;
-            string filename="ScreenSHot_"+time.ToString("h_mm_ss")+"png";
+            string filename = "ScreenSHot_" + time.ToString("h_mm_ss") + "png";
 
             var status = TestContext.CurrentContext.Result.Outcome.Status;
-            var stackTrace=TestContext.CurrentContext.Result.StackTrace;
+            var stackTrace = TestContext.CurrentContext.Result.StackTrace;
 
-            if(status== NUnit.Framework.Interfaces.TestStatus.Failed)
+            if (status == NUnit.Framework.Interfaces.TestStatus.Failed)
             {
-                test.Fail("test Fail", captureScreenShot(driver.Value,filename));
-                 test.Log(Status.Fail,"test Failed with Log trace"+ stackTrace);
+                test.Fail("test Fail", captureScreenShot(driver.Value, filename));
+                test.Log(Status.Fail, "test Failed with Log trace" + stackTrace);
             }
             else if (status == NUnit.Framework.Interfaces.TestStatus.Passed)
             {
@@ -131,8 +158,31 @@ namespace SeleniumC_Framework.utilities
             }
             extent.Flush();
 
+            // Adding SS when test case fail
+            if (TestContext.CurrentContext.Result.Outcome != ResultState.Success)
+            {
+                TestContext.Progress.WriteLine("Inside Allure SS");
+                captureScreenShotForAllure(driver.Value);
+            }
+
             //Thread.Sleep(10000);
             driver.Value.Quit();
+            driver.Value.Dispose();
+            //driver.Close();
+
+        }
+
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+
+
+            //Thread.Sleep(10000);
+            driver.Value.Quit();
+            driver.Value.Dispose();
+
+           
+          
             //driver.Close();
 
         }
@@ -142,7 +192,7 @@ namespace SeleniumC_Framework.utilities
         {
             ITakesScreenshot takesScreenshot = (ITakesScreenshot)driver;
             var screenshot = takesScreenshot.GetScreenshot().AsBase64EncodedString;
-            return MediaEntityBuilder.CreateScreenCaptureFromBase64String(screenshot,fileName).Build() ;
+            return MediaEntityBuilder.CreateScreenCaptureFromBase64String(screenshot,fileName).Build();
 
 
         }
@@ -190,6 +240,43 @@ namespace SeleniumC_Framework.utilities
         public static JsonReader GetJsonReader()
         {
             return new JsonReader();
+        }
+
+
+        public void  captureScreenShotForAllure(IWebDriver driver)
+        {
+            //this will we used when we want create new FOlder in CUrrent with Name ScreenShoot
+            //string PROJECTPATH = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+            //string reportPath = PROJECTPATH + "\\Screenshot\\";
+
+            //DateTime time =DateTime.Now;
+            //string fileName = "Screenshot_" + time.ToString("h_mm_ss");
+            //var directory = Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Screenshot");
+            //var filePath = directory + fileName;
+
+            //ITakesScreenshot takesScreenshot = (ITakesScreenshot)driver.Value;
+            //var file = takesScreenshot.GetScreenshot();
+
+            //file.SaveAsFile(filePath);
+            // return filePath;
+
+            byte[] screenShot=((ITakesScreenshot)driver).GetScreenshot().AsByteArray;
+
+            AllureLifecycle.Instance.AddAttachment("End Test","image/png", screenShot,".png");
+
+            TestContext.Progress.WriteLine("CApture  Allure SS");
+
+
+
+
+
+
+        }
+
+        [AllureStep("{0}")]
+        public void logStep(string message)
+        {
+
         }
 
 
